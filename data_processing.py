@@ -26,8 +26,8 @@ def prepare_input(file_name):
     # Create and store dictionaries for conversion between characters and vocabulary indices.
     char_to_ix = {ch: i for i, ch in enumerate(sorted(V))}
     ix_to_char = {i: ch for i, ch in enumerate(sorted(V))}
-    dump(char_to_ix, open('output/char_to_ix.pkl', 'wb'))
-    dump(ix_to_char, open('output/ix_to_char.pkl', 'wb'))
+    #dump(char_to_ix, open('output/char_to_ix.pkl', 'wb'))
+    #dump(ix_to_char, open('output/ix_to_char.pkl', 'wb'))
 
     # Get maximum name length in the data set. Add 1 for None at beginning of x and \n at end of y
     names = names.split("\n")
