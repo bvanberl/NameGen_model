@@ -1,5 +1,5 @@
 venv/
-pycache/
 .idea/
 input/X.npy
 input/Y.npy
+__pycache__/
