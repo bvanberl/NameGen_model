@@ -3,13 +3,14 @@ from utils import *
 import random
 from pickle import dump
 import sys
+import json
 
 # Get the data
-data = None
-if(sys.argv[1] == 'm'):
-    data = open('input/male_names.txt', 'r').read()
-else:
-    data = open('input/female_names.txt', 'r').read()
+gender_arg = sys.argv[1].lower()
+gender = 'female'
+if(gender_arg == 'm'):
+    gender = 'male'
+data = open('input/' + gender + '_names.txt', 'r').read()
 data = data.lower()
 chars = list(set(data))
 data_size, vocab_size = len(data), len(chars)
@@ -252,7 +253,7 @@ def model(data, ix_to_char, char_to_ix, num_iterations = 200000, n_a = 50, names
     loss = get_initial_loss(vocab_size, names)
     
     # Build list of all names (training examples).
-    with open("input/female_names.txt") as f:
+    with open("input/" + gender + "_names.txt") as f:
         examples = f.readlines()
     examples = [x.lower().strip() for x in examples]
     
@@ -298,5 +299,15 @@ def model(data, ix_to_char, char_to_ix, num_iterations = 200000, n_a = 50, names
 # Run the following cell, you should observe your model outputting random-looking characters at the first iteration. After a few thousand iterations, your model should learn to generate reasonable-looking names. 
 
 parameters = model(data, ix_to_char, char_to_ix)
-dump(parameters, open('output/parameters_female.pkl', 'wb'))
+
+# Save np arrays as binaries for use in foreign applications. Note each value in the arrays is 64 bits.
+parameters['Wax'].tofile('output/Wax_' + gender)
+parameters['Waa'].tofile('output/Waa_' + gender)
+parameters['Wya'].tofile('output/Wya_' + gender)
+parameters['b'].tofile('output/b_' + gender)
+parameters['by'].tofile('output/by_' + gender)
+
+# Save the parameters as .pkl and .npy for later use.
+dump(parameters, open('output/parameters_' + gender + '.pkl', 'wb'))
+np.save('output/parameters_' + gender + '.npy', parameters)
 

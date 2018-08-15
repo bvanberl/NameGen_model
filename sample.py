@@ -1,10 +1,11 @@
 import sys
+import os.path
 import numpy as np
 from utils import *
 import random
 from pickle import load
 
-def sample(parameters, char_to_ix):
+def sample(parameters, char_to_ix, start_char):
     """
     Sample a sequence of characters according to a sequence of probability distributions output of the RNN
 
@@ -29,6 +30,10 @@ def sample(parameters, char_to_ix):
 
     # Create an empty list of indices, this is the list which will contain the list of indices of the characters to generate (≈1 line)
     indices = []
+
+    # Add the specified first letter of the name, if it exists
+    if(start_char != None) and (start_char in char_to_ix):
+        indices.append(char_to_ix[start_char])
 
     # Idx is a flag to detect a newline character, we initialize it to -1
     idx = -1
@@ -66,22 +71,38 @@ def sample(parameters, char_to_ix):
 
     return indices
 
-# Get number of names to print and gender from command line parameters
+# Get number of names to print
 args = sys.argv
 num_samples = 5
 if(args[1].isdigit()):
     num_samples = int(args[1])
+
+# Get name language model parameters
 parameters = None
+gender = 'female'
 if(args[2].lower() == 'm'):
-    parameters = load(open('output/parameters_male.pkl', 'rb'))
-else:
-    parameters = load(open('output/parameters_female.pkl', 'rb'))
+    gender = 'male'
+parameters = load(open('output/parameters_' + gender + '.pkl', 'rb'))
+
+# Get start character if it exists
+start_char = None
+if(len(args) >= 4):
+    start_char = args[3][0]
 
 # Load dictionaries for vocabulary
 char_to_ix = load(open('output/char_to_ix.pkl', 'rb'))
 ix_to_char = load(open('output/ix_to_char.pkl', 'rb'))
 
+names = None
+if os.path.isfile('input/' + gender + '_names.txt'):
+    names = open('input/' + gender + '_names.txt', 'r').read()
+names = names.split("\n")
+
 # Generate num_samples names
 for i in range(0, num_samples):
-    sampled_indices = sample(parameters, char_to_ix)
+    while True:
+        sampled_indices = sample(parameters, char_to_ix, start_char)
+        new_name = ''.join(ix_to_char[ix] for ix in sampled_indices)
+        if new_name not in names:
+            break
     print_sample(sampled_indices, ix_to_char)

@@ -16,10 +16,6 @@ def create_files():
                 else:
                     female_names.append(name)
 
-    # Convert to lowercase
-    male_names = male_names
-    female_names = female_names
-
     # Convert names to a set to preserve only unique entries
     male_names = set(male_names)
     female_names = set(female_names)
